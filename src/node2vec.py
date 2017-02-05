@@ -10,6 +10,11 @@ class Graph():
 		self.p = p
 		self.q = q
 
+        def debug(self):
+            print(self.alias_nodes)
+            print(self.alias_edges)
+
+
 	def node2vec_walk(self, walk_length, start_node):
 		'''
 		Simulate a random walk starting from start node.
@@ -41,16 +46,16 @@ class Graph():
 		Repeatedly simulate random walks from each node.
 		'''
 		G = self.G
-		walks = []
+		#walks = []
 		nodes = list(G.nodes())
 		print 'Walk iteration:'
 		for walk_iter in range(num_walks):
 			print str(walk_iter+1), '/', str(num_walks)
 			random.shuffle(nodes)
 			for node in nodes:
-				walks.append(self.node2vec_walk(walk_length=walk_length, start_node=node))
+				yield [str(x) for x in self.node2vec_walk(walk_length=walk_length, start_node=node)]
 
-		return walks
+		#return walks
 
 	def get_alias_edge(self, src, dst):
 		'''
