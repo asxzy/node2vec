@@ -67,16 +67,16 @@ def read_graph():
     '''
     Reads the input network in networkx.
     '''
-    if args.weighted:
-        G = nx.read_edgelist(args.input, nodetype=int, data=(('weight',float),), create_using=nx.DiGraph())
-    else:
-        G = nx.read_edgelist(args.input, nodetype=int, create_using=nx.DiGraph())
-        for edge in G.edges():
-            G[edge[0]][edge[1]]['weight'] = 1
-
-    if not args.directed:
-        G = G.to_undirected()
-
+    G = nx.Graph()
+    with open(args.input) as f:
+        for index,line in enumerate(f):
+            if index % 100000 == 0:
+                print("loading:",index)
+            line = [int(x) for x in line.split()]
+            G.add_edge(line[0],line[1])
+    print("to undirected")
+    G = G.to_undirected()
+    print("loaded")
     return G
 
 def learn_embeddings(G):
@@ -98,9 +98,12 @@ def learn_embeddings(G):
 
 def save_walks(G):
     with open(args.output,'w') as f:
+        index = 0
         for walk in G.simulate_walks(args.num_walks, args.walk_length):
+            if index % 100000 == 0:
+                print("writing:",index)
             f.write(" ".join(walk)+"\n")
-
+            index += 1
 
 def main(args):
     '''
